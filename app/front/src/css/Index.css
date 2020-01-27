@@ -1,0 +1,16 @@
+div._loading_overlay_wrapper--active {
+    position: inherit;
+}
+
+div.recharts-box {
+    overflow: hidden;
+    /* padding-left: 5%; */
+}
+
+div.recharts-wrapper {
+    float: left;
+}
+
+table.tbl-charts {
+    width: 100%;
+}

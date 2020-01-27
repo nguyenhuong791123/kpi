@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  vscode:
+    container_name: vscode
+    image: nhdocker/code-server:v2
+    build:
+      context: ./vscode
+      dockerfile: Dockerfile
+    volumes:
+      - //C/Users/${USER}/kpi/app:/home/coder/project
+    restart: always
+    environment:
+      PASSWORD: vscode080
+    ports:
+      - 8080-8085:8080-8085
+    entrypoint: "code-server --auth=password"
+    depends_on:
+      - p-db
+
+  p-db:
+    container_name: "p-db"
+    image: postgres
+    restart: always
+    volumes:
+      - //C/Users/${USER}/kpi/setup/db:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kpi
+    # ports:
+    #     - 3306:3306
+
+  p-pgadmin:
+    container_name: "p-pgadmin"
+    image: dpage/pgadmin4
+    volumes:
+      - //C/Users/${USER}/kpi/setup/dbui:/var/lib/pgadmin/storage
+    environment:
+       PGADMIN_DEFAULT_EMAIL: nguyenhuong791123@gmail.com
+       PGADMIN_DEFAULT_PASSWORD: postgres080
+    restart: always
+    depends_on:
+      - p-db
+    ports:
+      - 80:80

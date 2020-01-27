@@ -1,0 +1,7 @@
+{
+    "host": "p-db"
+    ,"port": 5432
+    ,"database": "kpi"
+    ,"user": "postgres"
+    ,"password": "postgres"
+}
