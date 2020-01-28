@@ -1,66 +1,57 @@
-var sleep = require('sleep');
-const { db } = require("../../utils/adaptor");
-const { GraphQLString, GraphQLID } = require("graphql");
+// var sleep = require('sleep');
+const db = require("../../utils/adaptor").DBConnection;
+const { GraphQLObjectType, GraphQLList, GraphQLString } = require("graphql");
 
 const Fields = {
     schema: { type: GraphQLString }
     ,table: { type: GraphQLString }
     ,field_name: { type: GraphQLString }
-    ,field_type: { type: GraphQLString }
+    ,field_data_type: { type: GraphQLString }
+    ,field_constraint_type: { type: GraphQLString }
     ,field_required: { type: GraphQLString }
     ,field_default: { type: GraphQLString }
-    ,field_length: { type: GraphQLString }
+    ,field_maximum_length: { type: GraphQLString }
     ,field_comment: { type: GraphQLString }
 }
 
-class ClassFields {
-    constructor(shema, table) {
-        this.shema = shema;
-        this.table = table;
-        this.fields = null;
-    }
+const QueryFields = 'SELECT c.table_schema AS field_schema,c.table_name AS field_table'
+                    .concat(',c.column_name AS field_name'
+                    ).concat(',c.data_type AS field_data_type'
+                    ).concat(',c.is_nullable AS field_required'
+                    ).concat(',c.column_default AS field_default'
+                    ).concat(',c.character_maximum_length AS field_maximum_length'
+                    ).concat(',(SELECT pg_catalog.col_description(oid,c.ordinal_position::int) from pg_catalog.pg_class cl where cl.relname=c.table_name) AS field_comment'
+                    ).concat(',(SELECT tc.constraint_type'
+                    ).concat(' FROM information_schema.table_constraints tc '
+                    ).concat(' JOIN information_schema.key_column_usage ku ON ku.constraint_name=tc.constraint_name '
+                    ).concat(' WHERE ku.table_schema=c.table_schema AND ku.table_name=c.table_name AND ku.column_name=c.column_name '
+                    ).concat(') AS field_constraint_type'
+                    ).concat(' FROM information_schema.columns AS c '
+                    ).concat(' WHERE c.table_schema=$1 AND c.table_name=$2');
 
-    initFields() {
-        const query = 'SELECT $1 AS schema,$2 AS table'
-            .concat(',column_name AS field_name'
-            ).concat(',column_name AS field_name'
-            ).concat(',data_type AS field_type'
-            ).concat(',is_nullable AS field_required'
-            ).concat(',column_default AS field_default'
-            ).concat(',character_maximum_length AS field_length'
-            ).concat(',(SELECT pg_catalog.col_description(oid,c.ordinal_position::int) from pg_catalog.pg_class cl where cl.relname=c.table_name) AS field_comment'
-            ).concat(' FROM information_schema.columns as c '
-            ).concat(' WHERE c.table_schema=$3 AND c.table_name=$4');
-        this.fields = db.any(
-            query
-            ,[ this.shema, this.table, this.shema, this.table ]
-            ).then((res) => {
-                const fields = {};
-                for(var i=0; i<res.length; i++) {
-                    fields[res[i]['field_name']] = { type: GraphQLString };
-                }
-                return fields;
-            }).catch(err => err);
+async function addFieldQueries(fields) {
+    const FieldType = new GraphQLObjectType({ name: "Field", type: "Query", fields: Fields });
+    fields['getFields'] = {
+        type: new GraphQLList(FieldType),
+        args: { schema: { type: GraphQLString }, table: { type: GraphQLString } },
+        resolve(parentValue, args) {
+            return db.any(QueryFields, [args.schema, args.table ]).then(res => res).catch(err => err);
+        }
     }
+    return fields;
 }
 
-async function FieldsInit() {
-    const cl = new ClassFields('public', 'users');
-    cl.initFields();
-    cl.fields.then(val => {
-        UserFields = val;
-        console.log(UserFields);
-    });
-    // sleep.sleep(5);
+async function getFields(shema, table) {
+    return await db.any(QueryFields, [ shema, table ]
+        ).then((res) => {
+            const fields = {};
+            for(var i=0; i<res.length; i++) {
+                fields[res[i]['field_name']] = { type: GraphQLString };
+            }
+            return fields;
+        }).catch(err => err);
 }
-
-var UserFields = await FieldsInit();
-// {
-//     id: { type: GraphQLString }
-//     ,username: { type: GraphQLString }
-//     ,email: { type: GraphQLString }
-// }
 
 exports.Fields = Fields;
-exports.FieldsInit = FieldsInit;
-exports.UserFields = UserFields;
+exports.getFields = getFields;
+exports.addFieldQueries = addFieldQueries;
