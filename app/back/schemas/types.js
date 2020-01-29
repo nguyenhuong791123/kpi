@@ -1,5 +1,5 @@
 const { GraphQLObjectType } = require("graphql");
-const { upper1st } = require("../utils/utils");
+const { getTableNames } = require("../utils/utils");
 const { GetTables, GetFields } = require("./field");
 
 const InitPromise = new Promise(async (resolve, reject) => {
@@ -7,9 +7,10 @@ const InitPromise = new Promise(async (resolve, reject) => {
     const tables = await GetTables;
     for(var i=0; i<tables.length; i++) {
         tbl = tables[i];
-        const name = upper1st(tbl.table_name.split('_')[0]);
+        const name = getTableNames(tbl['table_name']);
         types[name] = new Promise(async (resolve, reject) => {
-            const fields = await GetFields(tbl.table_schema, tbl.table_name);
+            // const fields = await GetFields(tbl['table_schema'], tbl['table_name']);
+            const fields = await GetFields(tbl['table_fields']);
             resolve(new GraphQLObjectType({ name: name, type: "Query", fields: fields }));
         });
     }

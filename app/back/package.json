@@ -15,7 +15,7 @@
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.5.8",
-    "pg-promise": "^10.3.5",
-    "sleep": "^6.1.0"
+    "graphql-iso-date": "^3.6.1",
+    "pg-promise": "^10.3.5"
   }
 }
