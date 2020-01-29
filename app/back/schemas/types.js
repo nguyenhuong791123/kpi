@@ -1,14 +1,19 @@
 const { GraphQLObjectType } = require("graphql");
-const { getFields } = require("./fields/field");
+const { upper1st } = require("../utils/utils");
+const { GetTables, GetFields } = require("./field");
 
-const UserTypePromise = new Promise(async (resolve, reject) => {
-    const fields = await getFields('public', 'user_info');
-    resolve(new GraphQLObjectType({ name: "User" ,type: "Query" ,fields: fields }));
-});
-const GroupTypePromise = new Promise(async (resolve, reject) => {
-    const fields = await getFields('public', 'group_info');
-    resolve(new GraphQLObjectType({ name: "Group" ,type: "Query" ,fields: fields }));
+const InitPromise = new Promise(async (resolve, reject) => {
+    const types = {};
+    const tables = await GetTables;
+    for(var i=0; i<tables.length; i++) {
+        tbl = tables[i];
+        const name = upper1st(tbl.table_name.split('_')[0]);
+        types[name] = new Promise(async (resolve, reject) => {
+            const fields = await GetFields(tbl.table_schema, tbl.table_name);
+            resolve(new GraphQLObjectType({ name: name, type: "Query", fields: fields }));
+        });
+    }
+    resolve(types);
 });
 
-exports.UserTypePromise = UserTypePromise;
-exports.GroupTypePromise = GroupTypePromise;
+exports.InitPromise = InitPromise;

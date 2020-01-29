@@ -1,11 +1,9 @@
 const graphql = require("graphql");
 const { GraphQLObjectType } = graphql;
-const { addUserMutations } = require("./methods/user");
+const { GetMethodMutations } = require("./method");
 
 const RootMutationPromise = new Promise(async (resolve, reject) => {
-  var fields = {};
-  fields = await addUserMutations(fields);
-
+  const fields = await GetMethodMutations();
   resolve(new GraphQLObjectType({ name: "RootMutationType", type: "Mutation", fields: fields }));
 });
 

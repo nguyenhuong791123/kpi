@@ -1,9 +1,9 @@
 const db = require("../../utils/adaptor").DBConnection;
 const { GraphQLList, GraphQLID } = require("graphql");
-const { GroupTypePromise } = require("../types");
+const { InitPromise } = require("../types");
 
 async function addGroupQueries(fields) {
-    const GroupType = await GroupTypePromise;
+    const GroupType = await new Promise(async (resolve, reject) => { return await InitPromise.then(async function(obj){ resolve(await obj["Group"]) }) });
     fields['getGroup'] = {
       type: GroupType,
       args: { id: { type: GraphQLID } },
