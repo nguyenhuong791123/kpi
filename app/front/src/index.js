@@ -10,6 +10,7 @@ import Msg from './msg/Msg';
 const client = new ApolloClient({ uri: Msg.getSystemMsg('graphql') });
 console.log(client);
 
+// "start": "PORT=8081 react-scripts start",
 ReactDOM.render(
     <ApolloProvider client={ client }>
         <App />

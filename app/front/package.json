@@ -1,5 +1,5 @@
 {
-  "name": "reports",
+  "name": "front",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -25,6 +25,8 @@
   },
   "scripts": {
     "start": "PORT=8081 react-scripts start",
+    "restart": "pm2 restart kpi-front",
+    "stop": "pm2 stop kpi-front",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

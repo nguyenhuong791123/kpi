@@ -1,0 +1,109 @@
+version: '3'
+
+services:
+  # vscode:
+  #   container_name: vscode
+  #   image: nhdocker/code-server:v2
+  #   build:
+  #     context: ./vscode
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - //C/Users/${USER}/Insights:/home/coder/project
+  #   restart: always
+  #   environment:
+  #     PASSWORD: ${USER}7070
+  #   ports:
+  #     - 7070:7070
+  #   entrypoint: "code-server --auth=password"
+
+  # p-db:
+  #   container_name: "p-db"
+  #   image: postgres
+  #   restart: always
+  #   volumes:
+  #     - //C/Users/${USER}/Insights/db:/var/lib/postgresql
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: ${USER}5432
+  #     POSTGRES_DB: kpi
+  #   # ports:
+  #   #     - 5432:5432
+  
+  # p-pgadmin:
+  #   container_name: "p-pgadmin"
+  #   image: dpage/pgadmin4
+  #   volumes:
+  #     - //C/Users/${USER}/Insights/dbui:/var/lib/pgadmin/storage
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${USER}@vnext.vn
+  #     PGADMIN_DEFAULT_PASSWORD: ${USER}80
+  #   restart: always
+  #   depends_on:
+  #     - p-db
+  #   ports:
+  #     - 80:80
+
+  i-web:
+    container_name: "i-web"
+    image: nhdocker/i-centos:latest
+    build:
+      context: ./centos
+      dockerfile: Dockerfile
+      args:
+        ROOT_PASSWORD: ${USER}3001
+        MODE_APP: "insights-web"
+    volumes:
+      - //C/Users/${USER}/Insights/insights-web:/home/app
+    restart: always
+    privileged: true
+    ports:
+      - "3001:22"
+      - "7071:7071"
+
+  # i-cdk:
+  #   container_name: "i-cdk"
+  #   image: nhdocker/i-centos:latest
+  #   build:
+  #     context: ./centos
+  #     dockerfile: Dockerfile
+  #       args:
+  #         ROOT_PASSWORD: ${USER}3002
+  #   volumes:
+  #     - //C/Users/${USER}/Insights/insights-cdk:/home/app/front
+  #   restart: always
+  #   privileged: true
+  #   ports:
+  #     - "3002:22"
+  #     - "7072:7072"
+
+  # i-cdk:
+  #   container_name: "i-cdk"
+  #   image: nhdocker/i-centos:latest
+  #   build:
+  #     context: ./centos
+  #     dockerfile: Dockerfile
+  #       args:
+  #         ROOT_PASSWORD: ${USER}3003
+  #   volumes:
+  #     - //C/Users/${USER}/Insights/insights-jenkins:/home/app/front
+  #   restart: always
+  #   privileged: true
+  #   ports:
+  #     - "3003:22"
+  #     - "7073:7073"
+
+  # i-cdk:
+  #   container_name: "i-cdk"
+  #   image: nhdocker/i-centos:latest
+  #   build:
+  #     context: ./centos
+  #     dockerfile: Dockerfile
+  #       args:
+  #         ROOT_PASSWORD: ${USER}3004
+  #   volumes:
+  #     - //C/Users/${USER}/Insights/insights-service:/home/app/front
+  #   restart: always
+  #   privileged: true
+  #   ports:
+  #     - "3004:22"
+  #     - "7074:7074"

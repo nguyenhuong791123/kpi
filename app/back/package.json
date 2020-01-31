@@ -4,7 +4,9 @@
   "description": "KPI Reports",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "pm2 start app.js --name kpi-back",
+    "restart": "pm2 restart kpi-back",
+    "stop": "pm2 stop kpi-back",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
