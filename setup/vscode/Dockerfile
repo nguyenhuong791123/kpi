@@ -4,6 +4,7 @@ ENV DEBCONF_NOWARNINGS yes
 RUN sudo apt-get update
 RUN sudo apt-get install nodejs -y
 RUN sudo apt-get install npm -y
+RUN sudo npm install -g pm2
 
 RUN curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
 RUN sudo apt-get install nodejs -y
